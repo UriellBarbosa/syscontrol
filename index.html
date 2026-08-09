@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título -->
+    <title>SysControl</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <h1>SysControl</h1>
+    </header>
+
+    <!-- BOTÕES DE NAVEGAÇÃO -->
+    <nav>
+        <button class="nav-button" data-secao="inicio">Início</button>
+        <button class="nav-button" data-secao="materiais">Materiais</button>
+        <button class="nav-button" data-secao="servicos">Serviços</button>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main>
+        <!-- ABA INÍCIO -->
+        <section id="inicio">
+            <h4>Dashboard</h4>
+            <div class="stat-grid">
+                <div class="stat">
+                    <span class="stat-label">Total de Materiais</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Serviços Concluídos</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Serviços Pendentes</span>
+                    <span class="stat-value">0</span>
+                </div>
+            </div>
+
+            <h4>Últimos Serviços</h4>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serviços</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="ultimos-servicos">
+                    
+                    </tbody>
+                </table> 
+            </div>
+
+            <div class="actions-row">
+                <button class="action-button" id="gerar-pdf">Gerar PDF</button>
+                <button class="action-button" id="exp-backup">Exportar Backup</button>
+                <button class="action-button" id="imp-backup">Importar Backup</button>
+            </div>
+        </section>
+
+        <!-- ABA MATERIAIS -->
+        <section id="materiais">
+            <button class="add-material" id="novo-material">Novo Material</button>
+            <div class="form-card hidden">
+                <label for="nome-material">Nome do Material</label>
+                <input type="text" id="nome-material" placeholder="Digite o nome do material">
+
+                <label for="categoria">Categoria</label>
+                <select id="categoria">
+                    <option value="">Selecione uma categoria</option>
+                    <option value="eletronico">Eletrônico</option>
+                    <option value="eletrico">Elétrico</option>
+                    <option value="mecanico">Mecânico</option>
+                    <option value="outro">Outro</option>
+                </select>
+
+                <label for="quantidade">Quantidade</label>
+                <input type="number" id="quantidade" placeholder="Digite a quantidade">
+
+                <label for="custo-unitario">Custo Unitário</label>
+                <input type="number" id="custo-unitario" placeholder="Digite o custo da unidade">
+
+                <div class="form-buttons">
+                    <button class="action-button" id="salvar">Salvar</button>
+                    <button class="action-button" id="cancelar">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Categoria</th>
+                            <th>Quantidade</th>
+                            <th>Custo Unit.</th>
+                            <th>Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-materiais">
+                    
+                    </tbody>
+                </table> 
+            </div>
+        </section>
+
+        <!-- ABA SERVIÇOS -->
+        <section id="servicos">
+            <h2>Serviços</h2>
+            <p>Informações sobre serviços.</p>
+        </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer>
+        <p>&copy; 2026 SysControl. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="js/index.js"></script>
+</body>
+</html>

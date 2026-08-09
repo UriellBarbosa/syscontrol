@@ -1,0 +1,187 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ESTILO BASE */
+body {
+    font-family: sans-serif;
+    background-color: #f1f0ed;
+    color: #1a1a1a;
+}
+
+header {
+    background-color:#fafafa;
+    padding: 12px 20px;
+    border-bottom: 0.5px solid #e0e0e0;
+}
+
+h1 {
+    font-size: 20px;
+    color: #185fa5;
+}
+
+nav {
+    display: flex;
+    background-color: #fafafa;
+    border-bottom: 0.5px solid #e0e0e0;
+    justify-content: center;
+}
+
+/* NAV BOTÕES*/
+.nav-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #888;
+}
+
+.nav-button.active {
+    color:#185fa5;
+    border-bottom: 2px solid #185fa5;
+    font-weight: 500;
+}
+
+/* PÁGINA */
+main {
+    background-color: #f5f4ef;
+    padding: 20px;
+    min-height: calc(100vh - 120px);
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stat {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    border: 0.5px solid #e0e0e0;
+}
+
+.stat .stat-label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.stat .stat-value {
+    display: block;
+    font-size: 22px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+/* TABELA */
+.table-wrap {
+    background-color: #fff;
+    border-radius: 12px;
+    border: 0.5px solid #e0e0e0;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th {
+    background-color: #f5f4ef;
+    padding: 6px 14px;
+    text-align: left;
+    color: #888;
+    font-weight: 500;
+    border-bottom: 0.5px solid #e0e0e0;
+}
+
+td {
+    padding: 10px 14px;
+    color: #1a1a1a;
+    border-bottom: 0.5px solid #e0e0e0;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* BOTÕES DE AÇÃO */
+.actions-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.action-button {
+    padding: 7px 14px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 0.5px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* BOTÃO */
+.add-material {
+    display: block;
+    margin-left: auto;
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 0.5px solid #ccc;
+    margin-bottom: 10px;
+}
+
+/* FORMULÁRIO */
+.form-card {
+    background: #fff;
+    border: 0.5px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-card label {
+    font-size: 12px;
+    color: #888
+}
+
+.form-card input,
+.form-card select {
+    padding: 7px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 0.5px solid #ddd;
+    background: #fafafa;
+    color: #1a1a1a;
+}
+
+.hidden {
+    display: none;
+}
+
+/* BOTÕES FORMULÁRIO */
+.form-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* RODAPÉ */
+footer {
+    font-size: 12px;
+    text-align: center;
+}
