@@ -88,6 +88,35 @@ expBackup.addEventListener('click', () => {
   link.click();                                                // clique invisível que dispara o download automático do backup
 });
 
+// IMPORTAR BACKUP
+const impBackup = document.getElementById('imp-backup');
+const inputBackup = document.getElementById('input-backup');
+
+impBackup.addEventListener('click', () => {
+  inputBackup.click();
+});
+
+inputBackup.addEventListener('change', (e) => {
+  const arquivo = e.target.files[0]; // captura o arquivo enviado
+
+  const leitor = new FileReader(); // ler o arquivo que foi enviado pelo usuário
+
+  leitor.onload = (e) => {
+    const conteudo = e.target.result;
+
+    const conteudoObjeto = JSON.parse(conteudo);
+
+    localStorage.setItem('materiais', JSON.stringify(conteudoObjeto.materiais));
+    localStorage.setItem('servicos', JSON.stringify(conteudoObjeto.servicos));
+
+    carregarMateriais();
+    carregarServicos();
+    atualizarDashboard();
+    carregarUltimosServicos();
+  };
+  leitor.readAsText(arquivo);
+});
+
 /* ================
   ABA MATERIAIS
 ================= */
