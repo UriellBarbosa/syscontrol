@@ -48,7 +48,7 @@ Cenários identificados:
 - **Média probabilidade:** formatação do computador sem backup; uso em modo anônimo.
 - **Baixa probabilidade:** falha de hardware (HD/SSD).
 
-**Mitigação decidida:** funcionalidade de **exportar/importar backup em JSON**, permitindo ao usuário salvar e restaurar os dados manualmente. Incluída no escopo do MVP.
+**Mitigação decidida:** funcionalidade de **exportar/importar backup em JSON**, permitindo ao usuário salvar e restaurar os dados manualmente. Incluída no escopo do MVP. **Ainda não implementado.**
 
 ### 3.4 Navegação
 Optado por navegação em **abas** (não páginas separadas, não menu lateral) — mais simples e direto para um sistema pequeno com poucos módulos.
@@ -56,7 +56,7 @@ Optado por navegação em **abas** (não páginas separadas, não menu lateral) 
 Abas definidas:
 - **Início** — dashboard/visão geral (renomeada de "Relatórios" para refletir seu uso como tela inicial).
 - **Materiais** — cadastro e listagem.
-- **Serviços** — cadastro e listagem (ainda não implementada).
+- **Serviços** — cadastro e listagem.
 
 ### 3.5 Relatórios / Exportação
 Decisão inicial: exportar em CSV e PDF.
@@ -69,6 +69,14 @@ Decisão final (após discussão sobre uso real): **apenas PDF**, já que o rela
 - Listagem completa de materiais (quantidade, custo)
 
 **Observação técnica:** para gerar PDF localmente sem internet, será necessário baixar a biblioteca (ex: `jsPDF`) e referenciá-la localmente no projeto, em vez de via CDN — para manter o sistema 100% offline. **Ainda não implementado.**
+
+### 3.6 Formato de data
+`<input type="date">` sempre salva e retorna o valor em formato ISO (`AAAA-MM-DD`), independente da exibição visual do seletor. Decisão: manter o formato ISO na persistência (LocalStorage), e converter apenas na exibição (tabelas) para o formato brasileiro (`DD/MM/AAAA`) via função utilitária `formatarData()`.
+
+### 3.7 IDs duplicados entre módulos (decisão pragmática)
+Ao construir o módulo de Serviços reaproveitando a estrutura de Materiais, identificou-se risco de ids duplicados na página (ex: `categoria`, `salvar`, `cancelar`, `.form-card`). Decisão tomada: **não renomear os ids já existentes em Materiais** para evitar retrabalho no JS funcional; usar sufixo `-servico` apenas nos novos ids de Serviços (ex: `categoria-servico`, `salvar-servico`, `.form-card-servico`). Padronização completa dos ids de Materiais fica marcada como possível melhoria futura, caso o sistema cresça.
+
+Pela mesma razão, cada módulo tem sua própria variável de controle de edição (`editandoIndice` para materiais, `editandoIndiceServico` para serviços) — evita que a edição de um material sobrescreva o estado de edição de um serviço em andamento, e vice-versa.
 
 ---
 
@@ -118,7 +126,7 @@ Implementada via `querySelectorAll`, `forEach` e manipulação de `style.display
 
 **Formulário de cadastro:**
 - Campos: nome do material, categoria (select: eletrico/mecanico/outro), quantidade, custo unitário.
-- Formulário escondido por padrão (`.hidden`), aberto via botão "Novo Material", fechável via botão "Cancelar".
+- Formulário escondido por padrão (`.hidden`), aberto via botão "Novo Material" (`.btn-novo`), fechável via botão "Cancelar".
 - Validação: todos os campos obrigatórios (bloqueio via `alert` se algum estiver vazio).
 
 **Persistência:**
@@ -142,12 +150,52 @@ Implementada via `querySelectorAll`, `forEach` e manipulação de `style.display
 **Exclusão:**
 - Usa **delegação de eventos**: um único `addEventListener` no `<tbody id="lista-materiais">`, verificando via `e.target.classList.contains('btn-excluir')` se o clique foi em um botão de exclusão (necessário pois os botões são criados dinamicamente e não existem no carregamento inicial da página).
 - Remove o item da lista com `listaMateriais.splice(indice, 1)` e salva a lista atualizada.
+- Após excluir, chama `carregarMateriais()` e `atualizarDashboard()`.
 
-### 5.5 Módulo de Serviços
-**Ainda não implementado.** Estrutura HTML da seção existe (`<section id="servicos">`) como placeholder. Terá lógica de CRUD similar à de Materiais, com campos: serviço, categoria, data, status (pendente/em andamento/concluído).
+### 5.5 Módulo de Serviços — CRUD completo (implementado)
 
-### 5.6 Dashboard (Início)
-HTML/CSS implementados (cards de estatística + tabela de últimos serviços + botão de gerar PDF). **Lógica de JS para popular os cards e a tabela dinamicamente ainda não implementada** — depende da implementação do módulo de Serviços.
+Estrutura e lógica espelhadas do módulo de Materiais, com ids próprios (sufixo `-servico`) para evitar conflito — ver seção 3.7.
+
+**Formulário de cadastro:**
+- Campos: nome do serviço, categoria (select: eletrico/mecanico/outro), data (`type="date"`), status (select: concluido/em-execucao/pendente).
+- Formulário escondido por padrão, identificado por `.form-card.form-card-servico`, aberto via botão "Novo Serviço" (`.btn-novo`), fechável via botão "Cancelar".
+- Validação: todos os campos obrigatórios (bloqueio via `alert`).
+
+**Persistência:**
+- Dados armazenados na chave `'servicos'` do `LocalStorage`, como array de objetos JSON:
+  ```js
+  { nomeServico, categoriaServico, dataServico, statusServico }
+  ```
+- `dataServico` é salvo sempre em formato ISO (`AAAA-MM-DD`).
+
+**Listagem (`carregarServicos()`):**
+- Mesma lógica de `carregarMateriais()`, populando `<tbody id="lista-servicos">`.
+- Exibe a data já convertida para o formato brasileiro via `formatarData(servico.dataServico)`.
+
+**Edição:**
+- Mesmo padrão de Materiais, usando `data-indice`, variável `let editandoIndiceServico = null` e o par `if/else` no botão salvar para decidir entre substituir (`listaServicos[editandoIndiceServico] = servico`) ou criar (`.push(servico)`).
+
+**Exclusão:**
+- Delegação de eventos no `<tbody id="lista-servicos">` (`excluirLinhaTabelaServico`), mesma lógica de Materiais.
+- Após excluir, chama `carregarServicos()` e `atualizarDashboard()`.
+
+**Função utilitária `formatarData(data)`:**
+- Recebe uma data em formato ISO (`"2026-08-10"`), separa as partes com `.split('-')` e retorna a string reordenada em formato brasileiro (`"10/08/2026"`) via template string. Usada apenas na exibição — o valor salvo no LocalStorage permanece em ISO.
+
+### 5.6 Dashboard (Início) — implementado
+
+**Cards de estatística (`atualizarDashboard()`):**
+- Total de materiais: `listaMateriais.length`, exibido em `#total-materiais`.
+- Serviços concluídos: `listaServicos.filter(s => s.statusServico === 'concluido').length`, exibido em `#total-concluidos`.
+- Serviços pendentes: `listaServicos.filter(s => s.statusServico === 'pendente').length`, exibido em `#total-pendentes`.
+- Atualização via `.textContent` nos `<span>` correspondentes.
+- Chamada no carregamento da página e após salvar/excluir material ou serviço (não é necessária após edição, pois edição não altera quantidade de itens).
+- **Card "em execução" ainda não implementado** — seguiria o mesmo padrão de filtro (`statusServico === 'em-execucao'`); deixado como exercício para o Uriel replicar sozinho.
+
+**Tabela "Últimos serviços" (`carregarUltimosServicos()`):**
+- Usa `listaServicos.slice(-5)` para pegar os 5 serviços mais recentes.
+- Popula `<tbody id="ultimos-servicos">` sem coluna de ações (somente visualização): nome, data formatada, status.
+- Chamada no carregamento da página.
 
 ### 5.7 Backup (exportar/importar JSON)
 Botões já existem no HTML (`#exp-backup`, `#imp-backup`). **Lógica de JS ainda não implementada.**
@@ -167,6 +215,7 @@ Botão já existe no HTML (`#gerar-pdf`). **Lógica de JS ainda não implementad
   git commit -m "mensagem descritiva"
   git push
   ```
+- README.md e PRODUCT.md adicionados ao repositório.
 
 ---
 
@@ -185,16 +234,23 @@ Tópicos que geraram mais dúvidas durante o desenvolvimento (útil para retomar
 - Delegação de eventos (por que o listener precisa ir no elemento pai fixo, não nos elementos criados dinamicamente).
 - Diferença entre `const` e `let`.
 - Diferença entre callback e o parâmetro de evento (`e`) em `addEventListener`.
+- Diferença entre parâmetro (na declaração da função) e argumento (no momento da chamada).
+- Diferença entre propriedade (`.length`, `.value`, `.textContent`) e método (`.split()`, `.push()`, `.getElementById()`) — propriedades não usam parênteses, métodos sim.
+- `.filter()` para gerar subconjuntos de um array com base em uma condição.
+- `.slice(-N)` para recortar os últimos N itens de um array.
+- Reaproveitamento de estrutura entre módulos semelhantes (Materiais → Serviços) e os cuidados necessários (ids únicos, nomes de variáveis não conflitantes, escopo de `const`/`let` por bloco de função).
 
 ---
 
 ## 8. Roadmap / próximos passos
 
-- [ ] Implementar módulo de Serviços (formulário + CRUD, seguindo o mesmo padrão de Materiais).
-- [ ] Popular dinamicamente os cards de estatística e a tabela "Últimos serviços" da aba Início.
+- [x] Implementar módulo de Serviços (formulário + CRUD, seguindo o mesmo padrão de Materiais).
+- [x] Popular dinamicamente os cards de estatística e a tabela "Últimos serviços" da aba Início.
+- [ ] Adicionar card de estatística "Em execução" no dashboard (padrão já estabelecido, pendente de implementação pelo Uriel).
 - [ ] Implementar exportação/importação de backup em JSON.
 - [ ] Implementar geração de relatório em PDF (biblioteca local, sem CDN, para manter o sistema offline).
 - [ ] Validação e testes gerais de UX com o irmão (usuário final).
+- [ ] (Futuro, fora do escopo atual) Padronização de ids entre módulos, caso o sistema cresça (ver seção 3.7).
 - [ ] (Futuro, fora do escopo atual) Possível versão mobile/PWA.
 
 ---
@@ -202,6 +258,6 @@ Tópicos que geraram mais dúvidas durante o desenvolvimento (útil para retomar
 ## 9. Status atual
 
 **Módulo de Materiais:** completo (criar, listar, editar, excluir, com persistência local).
-**Módulo de Serviços:** não iniciado.
-**Dashboard:** estrutura visual pronta, sem lógica dinâmica.
+**Módulo de Serviços:** completo (criar, listar, editar, excluir, com persistência local e formatação de data).
+**Dashboard:** completo — cards de estatística (materiais, concluídos, pendentes) e tabela de últimos 5 serviços, ambos dinâmicos.
 **Backup e PDF:** estrutura visual pronta (botões), sem lógica implementada.

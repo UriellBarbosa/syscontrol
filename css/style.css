@@ -132,7 +132,7 @@ tr:last-child td {
 }
 
 /* BOTÃO */
-.add-material {
+.btn-novo {
     display: block;
     margin-left: auto;
     font-size: 13px;

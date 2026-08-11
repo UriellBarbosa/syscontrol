@@ -32,15 +32,15 @@
             <div class="stat-grid">
                 <div class="stat">
                     <span class="stat-label">Total de Materiais</span>
-                    <span class="stat-value">0</span>
+                    <span class="stat-value" id="total-materiais">0</span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">Serviços Concluídos</span>
-                    <span class="stat-value">0</span>
+                    <span class="stat-value" id="total-concluidos">0</span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">Serviços Pendentes</span>
-                    <span class="stat-value">0</span>
+                    <span class="stat-value" id="total-pendentes">0</span>
                 </div>
             </div>
 
@@ -56,9 +56,8 @@
                         </tr>
                     </thead>
 
-                    <tbody id="ultimos-servicos">
-                    
-                    </tbody>
+                    <tbody id="ultimos-servicos"></tbody>
+                    <!-- corpo da tabela carrega de forma dinâmica via JS. -->
                 </table> 
             </div>
 
@@ -71,7 +70,7 @@
 
         <!-- ABA MATERIAIS -->
         <section id="materiais">
-            <button class="add-material" id="novo-material">Novo Material</button>
+            <button class="btn-novo" id="novo-material">Novo Material</button>
             <div class="form-card hidden">
                 <label for="nome-material">Nome do Material</label>
                 <input type="text" id="nome-material" placeholder="Digite o nome do material">
@@ -110,17 +109,60 @@
                         </tr>
                     </thead>
 
-                    <tbody id="lista-materiais">
-                    
-                    </tbody>
+                    <tbody id="lista-materiais"></tbody>
+                    <!-- corpo da tabela carrega de forma dinâmica via JS. -->
                 </table> 
             </div>
         </section>
 
         <!-- ABA SERVIÇOS -->
         <section id="servicos">
-            <h2>Serviços</h2>
-            <p>Informações sobre serviços.</p>
+            <button class="btn-novo" id="novo-servico">Novo Serviço</button>
+            <div class="form-card hidden form-card-servico">
+                <label for="nome-servico">Serviços</label>
+                <input type="text" id="nome-servico" placeholder="Digite o serviço executado">
+
+                <label for="categoria-servico">Categoria</label>
+                <select id="categoria-servico">
+                    <option value="">Selecione uma categoria</option>
+                    <option value="eletrico">Elétrico</option>
+                    <option value="mecanico">Mecânico</option>
+                    <option value="outro">Outro</option>
+                </select>
+
+                <label for="data-servico">Data</label>
+                <input type="date" id="data-servico">
+
+                <label for="status-servico">Status</label>
+                <select id="status-servico">
+                    <option value="">Selecione status</option>
+                    <option value="concluido">Concluído</option>
+                    <option value="em-execucao">Em execução</option>
+                    <option value="pendente">Pendente</option>
+                </select>
+
+                <div class="form-buttons">
+                    <button class="action-button" id="salvar-servico">Salvar</button>
+                    <button class="action-button" id="cancelar-servico">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serviços</th>
+                            <th>Categoria</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-servicos"></tbody>
+                    <!-- corpo da tabela carrega de forma dinâmica via JS. -->
+                </table> 
+            </div>
         </section>
     </main>
 

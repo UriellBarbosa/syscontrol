@@ -1,4 +1,5 @@
 let editandoIndice = null;
+let editandoIndiceServico = null;
 
 // BOTÕES DE SEÇÃO DO HEADER
 const botoes = document.querySelectorAll(".nav-button");
@@ -23,6 +24,46 @@ botoes.forEach((botao) => {
     mostrarSecao(botao.dataset.secao);
   });
 });
+
+/* ================
+  ABA INÍCIO
+================= */
+function atualizarDashboard() {
+  const materiais = localStorage.getItem('materiais');
+  const listaMateriais = materiais ? JSON.parse(materiais) : [];
+
+  const servicos = localStorage.getItem('servicos');
+  const listaServicos = servicos ? JSON.parse(servicos) : [];
+  const concluidos = listaServicos.filter(servico => servico.statusServico === 'concluido');
+  const pendentes = listaServicos.filter(servico => servico.statusServico === 'pendente');
+
+  document.getElementById('total-materiais').textContent = listaMateriais.length;
+  document.getElementById('total-concluidos').textContent = concluidos.length;
+  document.getElementById('total-pendentes').textContent = pendentes.length;
+};
+
+function carregarUltimosServicos() {
+  const servicos = localStorage.getItem('servicos');
+  const listaServicos = servicos ? JSON.parse(servicos) : [];
+
+  const ultimosServicos = listaServicos.slice(-5);
+
+  document.getElementById('ultimos-servicos').innerHTML = "";
+
+  ultimosServicos.forEach((servico, indice) => {
+    const linhaUltimosServicos = `<tr>
+        <td>${servico.nomeServico}</td>
+        <td>${formatarData(servico.dataServico)}</td>
+        <td>${servico.statusServico}</td>
+        </tr>`
+
+    document.getElementById('ultimos-servicos').innerHTML += linhaUltimosServicos;
+  });
+};
+
+/* ================
+  ABA MATERIAIS
+================= */
 
 // LISTENERS 
 const novoMaterial = document.getElementById("novo-material");
@@ -50,6 +91,8 @@ excluirLinhaTabela.addEventListener("click", (e) => {
     localStorage.setItem('materiais', JSON.stringify(listaMateriais));
 
     carregarMateriais();
+    atualizarDashboard();
+
   } else if (e.target.classList.contains('btn-editar')) {
     const indice = e.target.dataset.indice;
 
@@ -89,7 +132,7 @@ salvarFormulario.addEventListener("click", () => {
         const listaMateriais = materiais ? JSON.parse(materiais) : [];
 
         if (editandoIndice !== null) {
-          listaMateriais[editandoIndice] = material;
+          listaMateriais[editandoIndice] = material; // lógica de editar material
         } else {
           listaMateriais.push(material); // lógica de criar material
         }
@@ -106,6 +149,7 @@ salvarFormulario.addEventListener("click", () => {
         editandoIndice = null;
 
         carregarMateriais();
+        atualizarDashboard();
     };
 });
 
@@ -133,5 +177,132 @@ function carregarMateriais() {
   });
 };
 
+/* ================
+  ABA SERVIÇOS
+================= */
+
+const novoServico = document.getElementById("novo-servico");
+const abrirFormularioServico = document.querySelector(".form-card-servico");
+const fecharFormularioServico = document.getElementById("cancelar-servico");
+const salvarFormularioServico = document.getElementById("salvar-servico");
+const excluirLinhaTabelaServico = document.getElementById("lista-servicos");
+
+// LISTENERS
+novoServico.addEventListener("click", () => {
+    abrirFormularioServico.classList.toggle('hidden');
+});
+
+fecharFormularioServico.addEventListener("click", () => {
+    abrirFormularioServico.classList.toggle('hidden');
+});
+
+salvarFormularioServico.addEventListener("click", () => {
+  const nomeServico = document.getElementById("nome-servico").value;
+  const categoriaServico = document.getElementById("categoria-servico").value;
+  const dataServico = document.getElementById("data-servico").value;
+  const statusServico = document.getElementById("status-servico").value;
+
+  if (nomeServico === "" || categoriaServico === "" || dataServico === "" || statusServico === "") {
+    alert("Para salvar um novo serviço todos os campos precisam estar preenchidos")
+  } else {
+    const servico = {
+      nomeServico: nomeServico,
+      categoriaServico: categoriaServico,
+      dataServico: dataServico,
+      statusServico: statusServico,
+    };
+
+    const servicos = localStorage.getItem('servicos');
+    const listaServicos = servicos ? JSON.parse(servicos) : [];
+
+    if (editandoIndiceServico !== null) {
+          listaServicos[editandoIndiceServico] = servico; // lógica de editar material
+        } else {
+          listaServicos.push(servico); // lógica de criar material
+        }
+
+    localStorage.setItem('servicos', JSON.stringify(listaServicos));
+
+    document.getElementById("nome-servico").value = "";
+    document.getElementById("categoria-servico").value = "";
+    document.getElementById("data-servico").value = "";
+    document.getElementById("status-servico").value = "";
+
+    abrirFormularioServico.classList.add('hidden');
+
+    editandoIndiceServico = null;
+
+    carregarServicos();
+    atualizarDashboard();
+  }
+});
+
+excluirLinhaTabelaServico.addEventListener("click", (e) => {
+  if (e.target.classList.contains('btn-excluir')) {
+    const indiceServico = e.target.dataset.indice;
+
+    const servicos = localStorage.getItem('servicos');
+    const listaServicos = servicos ? JSON.parse(servicos) : [];
+
+    listaServicos.splice(indiceServico, 1);
+    localStorage.setItem('servicos', JSON.stringify(listaServicos));
+
+    carregarServicos();
+    atualizarDashboard();
+
+  } else if (e.target.classList.contains('btn-editar')) {
+    const indiceServico = e.target.dataset.indice;
+
+    const servicos = localStorage.getItem('servicos');
+    const listaServicos = servicos ? JSON.parse(servicos) : [];
+
+    const servico = listaServicos[indiceServico];
+
+    document.getElementById('nome-servico').value = servico.nomeServico;
+    document.getElementById('categoria-servico').value = servico.categoriaServico;
+    document.getElementById('data-servico').value = servico.dataServico;
+    document.getElementById('status-servico').value = servico.statusServico;
+
+    abrirFormularioServico.classList.remove('hidden');
+
+    editandoIndiceServico = indiceServico;
+  }
+});
+
+// FUNÇÃO CARREGAR SERVIÇOS
+function carregarServicos() {
+  const servicos = localStorage.getItem('servicos');
+  const listaServicos = servicos ? JSON.parse(servicos) : [];
+
+  document.getElementById('lista-servicos').innerHTML = "";
+
+  listaServicos.forEach((servico, indice) => {
+    const linhaServico = `<tr>
+        <td>${servico.nomeServico}</td>
+        <td>${servico.categoriaServico}</td>
+        <td>${formatarData(servico.dataServico)}</td>
+        <td>${servico.statusServico}</td>
+        <td>
+        <button class="action-button btn-editar" data-indice="${indice}">Editar</button>
+        <button class="action-button btn-excluir" data-indice="${indice}">Excluir</button>
+        </td>
+        </tr>`
+
+    document.getElementById('lista-servicos').innerHTML += linhaServico;
+  });
+};
+
+// FUNÇÃO PARA APRESENTAR A DATA FORMATADA PADRÃO BRASILEIRO
+function formatarData(data) {
+  const partes = data.split('-');
+
+  const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+  return dataFormatada;
+}
+
+
 mostrarSecao("inicio");
+carregarUltimosServicos();
+atualizarDashboard();
 carregarMateriais();
+carregarServicos();
