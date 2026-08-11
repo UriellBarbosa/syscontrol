@@ -61,6 +61,33 @@ function carregarUltimosServicos() {
   });
 };
 
+// EXPORTAR BACKUP
+const expBackup = document.getElementById('exp-backup');
+
+expBackup.addEventListener('click', () => {
+  const materiais = localStorage.getItem('materiais');
+  const listaMateriais = materiais ? JSON.parse(materiais) : [];
+  const servicos = localStorage.getItem('servicos');
+  const listaServicos = servicos ? JSON.parse(servicos) : [];
+
+  const itensBackup = {
+    materiais: listaMateriais,
+    servicos: listaServicos,
+  }
+
+  const backup = JSON.stringify(itensBackup);                  // transforma o objeto da const itensBackup em JSON
+
+  const blob = new Blob([backup], { type:'application/json'}); // cria arquivo para download
+
+  const url = URL.createObjectURL(blob);                       // cria URL temporária do arquivo a ser baixado
+
+  const link = document.createElement('a');                    // elemento de link criado dinamicamente
+
+  link.href = url;                                             // configura o link para a URL criada
+  link.download = 'backup-syscontrol.json';                    // configura link de download com nome do arquivo
+  link.click();                                                // clique invisível que dispara o download automático do backup
+});
+
 /* ================
   ABA MATERIAIS
 ================= */
